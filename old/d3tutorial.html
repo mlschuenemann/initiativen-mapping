@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/index.css"/>
+</head>
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, sans-serif;
+        font-size: 14px;
+        color: #333;
+    }
+    #menu {
+        margin: 10px;
+    }
+    #content div {
+        display: inline-block;
+        margin: 2px;
+        background-color: orange;
+        color: white;
+        padding: 8px;
+        width: 100px;
+        height: 14px;
+        text-align: center;
+    }
+</style>
+<body>
+    <div id="content">
+        <div>Does not change</div>
+        <div>Does not change</div>
+    </div>
+    
+    <script src="https://d3js.org/d3.v4.min.js "></script>
+   
+    <script>
+
+        var letters ="NSFISBDGNO"
+        letters = letters.split("");
+        d3.select("#content").selectAll("div").data(letters).enter().append("div").text((d, i) => d);
+
+
+
+    </script>
+   
+   
+    <script src="index.js"></script>
+    
+</body>
+</html>
