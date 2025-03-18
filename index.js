@@ -1,20 +1,14 @@
-// Toggle this variable to true for local testing, false for fetching from GitHub Pages
-const isLocal = true;
-
-// Set the local or remote JSON URL
-const localURL = "graph.json";
 const jsonURL =
-  "https://mlschuenemann.github.io/initiative-mapping-data/graph.json"; // Full path to your GitHub-hosted JSON file
+  "https://mlschuenemann.github.io/initiative-mapping-data/graph.json";
 
 // Function to fetch the JSON data from either the local or hosted file
 async function fetchData() {
   try {
-    // Use either the local or remote URL depending on the value of isLocal
-    const response = await fetch(isLocal ? localURL : jsonURL); // Fetch the JSON data
-    const data = await response.json(); // Parse the data into a JavaScript object
-    updatePlugin(data); // Update your D3 chart with the fetched data
+    const response = await fetch(jsonURL);
+    const data = await response.json();
+    updatePlugin(data);
   } catch (error) {
-    console.error("Error fetching the JSON file:", error); // Handle fetch errors
+    console.error("Error fetching the JSON file:", error);
   }
 }
 
@@ -23,15 +17,13 @@ fetchData();
 // Function to update the D3 chart using the fetched data
 function updatePlugin(data) {
   const chart = () => {
-    // Specify the dimensions of the chart.
-    const width = 1908;
-    const height = 1600;
 
-    // The force simulation mutates links and nodes, so create a copy.
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
     const links = data.links.map((d) => ({ ...d }));
     const nodes = data.nodes.map((d) => ({ ...d }));
 
-    // Create a simulation with several forces.
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -39,7 +31,7 @@ function updatePlugin(data) {
         d3
           .forceLink(links)
           .id((d) => d.id)
-          .distance(300) // Adjust link distance to account for increased node sizes
+          .distance(300)
       )
       .force(
         "charge",
@@ -48,7 +40,7 @@ function updatePlugin(data) {
       .force(
         "collide",
         d3.forceCollide().radius((d) => (d.style?.radius || 10) + 10)
-      ) // Collision force to prevent node overlap
+      )
       .force("x", d3.forceX().strength(0.05))
       .force("y", d3.forceY().strength(0.05));
 
@@ -68,7 +60,7 @@ function updatePlugin(data) {
         .zoom()
         .scaleExtent([0.5, 10]) // Set zoom range
         .on("zoom", (event) => {
-          // Only scale the network, do not translate (pan)
+
           g.attr("transform", `scale(${event.transform.k})`);
         })
     );
@@ -87,18 +79,16 @@ function updatePlugin(data) {
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => d.style?.radius || 10) // Use radius from style or default to 10
-      .attr("fill", (d) => d.style?.color || "#888") // Use color from style or default to #888
-      .attr("stroke", (d) => d.style?.stroke_color || "#fff") // Use stroke_color from style or default to #fff
-      .attr("stroke-width", (d) => d.style?.stroke_width || 1.5) // Use stroke_width from style or default to 1.5
+      .attr("r", (d) => d.style?.radius || 10)
+      .attr("fill", (d) => d.style?.color || "#888")
+      .attr("stroke", (d) => d.style?.stroke_color || "#fff")
+      .attr("stroke-width", (d) => d.style?.stroke_width || 1.5)
       // Add this within the click event for each node
       .on("click", (event, d) => {
         if (d.web_links) {
             window.open(d.web_links, "_blank");
         }
     })
-
-
 
     const labels = g
       .append("g")
@@ -108,9 +98,9 @@ function updatePlugin(data) {
       .attr("dy", (d) => d.style?.y_label || -12)
       .attr("text-anchor", "middle")
       .text((d) => d.title)
-      .attr("font-size", (d) => d.style?.font_size || "10px") // Use font_size from style or default to 10px
+      .attr("font-size", (d) => d.style?.font_size || "10px")
       .attr("font-family", "sans-serif")
-      .attr("font-weight", (d) => d.style?.font_weight || "normal") // Use font_weight from style or default to normal
+      .attr("font-weight", (d) => d.style?.font_weight || "normal")
       .attr("fill", (d) => d.style?.font_color || "black")
       .style("pointer-events", "none");
     // Add drag behavior.
@@ -141,12 +131,11 @@ function updatePlugin(data) {
     const originalRadius = 10;
 
     // Define colors for highlighting and graying out
-    const highlightColor = "#333"; // Dark color for highlighted nodes
-    const grayColor = "lightgray"; // Color for grayed-out nodes
+    const highlightColor = "#333";
+    const grayColor = "lightgray";
 
     // Add mouseover and mouseout events for nodes
     node.on("mouseover", (event, d) => {
-      // Get the connected nodes
       const connectedNodes = new Set();
       const connectedLinks = [];
       links.forEach((link) => {
@@ -162,14 +151,14 @@ function updatePlugin(data) {
       // Highlight connected nodes and gray out all others
       node
         .transition()
-        .duration(200) // Transition duration for smooth effect
+        .duration(200)
         .attr("fill", (n) => {
           if (connectedNodes.has(n.id)) {
-            return highlightColor; // Dark color for highlighted nodes
+            return highlightColor;
           } else if (n.id === d.id) {
-            return highlightColor; // Dark color for hovered node
+            return highlightColor;
           } else {
-            return grayColor; // Grayed-out color for non-connected nodes
+            return grayColor;
           }
         })
         .attr("stroke", (n) =>
@@ -202,20 +191,20 @@ function updatePlugin(data) {
       node
         .transition()
         .duration(200) // Transition duration for smooth effect
-        .attr("fill", (n) => n.style?.color || originalColor) // Reset to original color
-        .attr("stroke", (n) => n.style?.stroke_color || originalStrokeColor) // Reset to original stroke color
-        .attr("stroke-width", (n) => n.style?.stroke_width || 1.5); // Reset to original stroke width
+        .attr("fill", (n) => n.style?.color || originalColor)
+        .attr("stroke", (n) => n.style?.stroke_color || originalStrokeColor)
+        .attr("stroke-width", (n) => n.style?.stroke_width || 1.5);
 
       labels
         .transition()
         .duration(200)
-        .attr("fill", (n) => n.style?.font_color || "black"); // Reset to original font color
+        .attr("fill", (n) => n.style?.font_color || "black");
 
       link
         .transition()
         .duration(200)
-        .attr("stroke", "#999") // Reset to original link color
-        .attr("stroke-opacity", 0.2); // Reset to original link opacity
+        .attr("stroke", "#999")
+        .attr("stroke-opacity", 0.2);
     });
 
     // Reheat the simulation when drag starts, and fix the subject position.
@@ -225,9 +214,7 @@ function updatePlugin(data) {
       event.subject.fy = event.subject.y;
     }
 
-    // Update the subject (dragged node) position during drag.
-    // Prevent nodes from being dragged outside the SVG bounds.
-    function dragged(event) {
+   function dragged(event) {
       // Get the width and height of the SVG (viewport boundaries)
       const width = 1900;
       const height = 1620;
@@ -237,8 +224,7 @@ function updatePlugin(data) {
       event.subject.fy = Math.max(-height / 2, Math.min(height / 2, event.y));
     }
 
-    // Restore the target alpha so the simulation cools after dragging ends.
-    // Unfix the subject position now that it’s no longer being dragged.
+
     function dragended(event) {
       if (!event.active) simulation.alphaTarget(0);
       event.subject.fx = null;
@@ -246,6 +232,5 @@ function updatePlugin(data) {
     }
   };
 
-  // Call the chart function to render the graph
   chart();
 }
