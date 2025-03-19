@@ -58,12 +58,16 @@ function updatePlugin(data) {
     svg.call(
       d3
         .zoom()
-        .scaleExtent([0.5, 10]) // Set zoom range
+        .scaleExtent([0.2, 10]) // Set zoom range
+        .filter((event) => {
+          // Allow zooming only if the user holds Ctrl or uses pinch gestures
+          return event.type === "wheel" ? event.ctrlKey || event.metaKey : true;
+        })
         .on("zoom", (event) => {
-
-          g.attr("transform", `scale(${event.transform.k})`);
+          g.attr("transform", event.transform);
         })
     );
+
     // Add a line for each link, and a circle for each node.
     const link = g
       .append("g")
