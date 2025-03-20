@@ -149,7 +149,7 @@
     }
   },
   {
-    "id": "32",
+    "id": "33",
     "title": "Studenteninitiative für Kinder",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/studenteninitiative-fuer-kinder-friedrichshafen.php",
     "style": {
@@ -164,7 +164,7 @@
     }
   },
   {
-    "id": "33",
+    "id": "34",
     "title": "AISEC",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/aiesec.php",
     "style": {
@@ -179,7 +179,7 @@
     }
   },
   {
-    "id": "34",
+    "id": "35",
     "title": "left CHOICE",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/left-choice.php",
     "style": {
@@ -194,7 +194,7 @@
     }
   },
   {
-    "id": "35",
+    "id": "36",
     "title": "Hacker School",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/hacker-school-friedrichshafen.php",
     "style": {
@@ -209,7 +209,7 @@
     }
   },
   {
-    "id": "36",
+    "id": "37",
     "title": "Zeppelin Orchestra",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/zeppelinorchestra.php",
     "style": {
@@ -224,7 +224,7 @@
     }
   },
   {
-    "id": "37",
+    "id": "38",
     "title": "Auf einen Wunsch setzen",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/wunschsetzen.php",
     "style": {
@@ -239,7 +239,7 @@
     }
   },
   {
-    "id": "38",
+    "id": "39",
     "title": "ZUfo",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/zufo.php",
     "style": {
@@ -254,7 +254,7 @@
     }
   },
   {
-    "id": "39",
+    "id": "40",
     "title": "YEP",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/yep.php",
     "style": {
@@ -269,7 +269,7 @@
     }
   },
   {
-    "id": "40",
+    "id": "41",
     "title": "Surrealistic City",
     "web_links": "https://www.zu.de/unileben/spoff/projekte/surrealistic-city.php",
     "style": {
@@ -301,7 +301,8 @@
   { "source": "23", "target": "37" },
   { "source": "23", "target": "38" },
   { "source": "23", "target": "39" },
-  { "source": "23", "target": "40" }
+  { "source": "23", "target": "40" },
+  { "source": "23", "target": "41" }
 
 ]
 }
