@@ -4,10 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+      #chart {
+        width: 80%;
+        max-width: 1000px;
+        height: 600px;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #ccc;
+      }
+
+      #chart svg {
+        display: block;
+      }
+    </style>
 </head>
 
 <body>
-    <div id="chart"></div>
+    <div id="chart" ></div>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="index.js"></script>
