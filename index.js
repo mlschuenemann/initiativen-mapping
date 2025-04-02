@@ -1,5 +1,5 @@
 const jsonURL =
-  "https://mlschuenemann.github.io/initiative-mapping-data/graph.json";
+  "./graph.json";
 
 // Function to fetch the JSON data from either the local or hosted file
 async function fetchData() {
@@ -18,11 +18,16 @@ fetchData();
 function updatePlugin(data) {
   const chart = () => {
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const container = document.getElementById("chart");
+    const { width, height } = container.getBoundingClientRect();
 
     const links = data.links.map((d) => ({ ...d }));
     const nodes = data.nodes.map((d) => ({ ...d }));
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
 
     const simulation = d3
       .forceSimulation(nodes)
@@ -41,8 +46,14 @@ function updatePlugin(data) {
         "collide",
         d3.forceCollide().radius((d) => (d.style?.radius || 10) + 10)
       )
-      .force("x", d3.forceX().strength(0.05))
-      .force("y", d3.forceY().strength(0.05));
+      .force("x", d3.forceX().x((d) =>
+        clamp(d.x, (d.style?.radius || 10), width - (d.style?.radius || 10))
+      ).strength(0.1))
+
+      .force("y", d3.forceY().y((d) =>
+        clamp(d.y, (d.style?.radius || 10), height - (d.style?.radius || 10))
+      ).strength(0.1));
+
 
     // Create the SVG container inside the #chart div.
     const svg = d3
@@ -50,23 +61,33 @@ function updatePlugin(data) {
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("viewBox", [-width / 2, -height / 2, width, height])
+      .attr("viewBox", [0,0, width, height])
       .attr("style", "max-width: 100%; height: auto;");
 
     const g = svg.append("g");
 
-    svg.call(
-      d3
-        .zoom()
-        .scaleExtent([0.2, 10]) // Set zoom range
-        .filter((event) => {
-          // Allow zooming only if the user holds Ctrl or uses pinch gestures
-          return event.type === "wheel" ? event.ctrlKey || event.metaKey : true;
-        })
-        .on("zoom", (event) => {
-          g.attr("transform", event.transform);
-        })
-    );
+    const zoom = d3
+    .zoom()
+    .scaleExtent([0.2, 10])
+    .filter((event) => {
+      return event.type === "wheel" ? event.ctrlKey || event.metaKey : true;
+    })
+    .on("zoom", (event) => {
+      g.attr("transform", event.transform);
+    });
+
+  svg.call(zoom);
+
+  // Set initial zoom
+  const initialScale = 0.3;
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  svg.call(
+    zoom.transform,
+    d3.zoomIdentity.translate(centerX, centerY).scale(initialScale)
+  );
+
 
     // Add a line for each link, and a circle for each node.
     const link = g
@@ -128,6 +149,7 @@ function updatePlugin(data) {
 
       labels.attr("x", (d) => d.x).attr("y", (d) => d.y);
     });
+
 
     // Define the original color and radius for reset
     const originalColor = "#888";
@@ -220,12 +242,13 @@ function updatePlugin(data) {
 
    function dragged(event) {
       // Get the width and height of the SVG (viewport boundaries)
-      const width = 1900;
-      const height = 1620;
+      const container = document.getElementById("chart");
+      const { width, height } = container.getBoundingClientRect();
+
 
       // Clamp the node's new x and y positions to stay within the SVG boundaries
-      event.subject.fx = Math.max(-width / 2, Math.min(width / 2, event.x));
-      event.subject.fy = Math.max(-height / 2, Math.min(height / 2, event.y));
+      event.subject.fx = Math.max(-width, Math.min(width, event.x));
+      event.subject.fy = Math.max(-height, Math.min(height, event.y));
     }
 
 
