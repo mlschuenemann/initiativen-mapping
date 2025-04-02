@@ -70,7 +70,7 @@ function updatePlugin(data) {
     .zoom()
     .scaleExtent([0.2, 10])
     .filter((event) => {
-      return event.type === "wheel" ? event.ctrlKey || event.metaKey : true;
+      return false;
     })
     .on("zoom", (event) => {
       g.attr("transform", event.transform);
