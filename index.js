@@ -64,29 +64,33 @@ function updatePlugin(data) {
       .attr("viewBox", [0,0, width, height])
       .attr("style", "max-width: 100%; height: auto;");
 
-    const g = svg.append("g");
 
-    const zoom = d3
-    .zoom()
-    .scaleExtent([0.2, 10])
+    const g = svg.append("g");
+    const initialScale = 0.4;
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const zoom = d3.zoom()
     .filter((event) => {
-      return event.type === "wheel";
+      // Only zoom when:
+      //  - it's not a wheel event (like mouse drag or touch)
+      //  - OR if it's a wheel event and Ctrl or Meta (⌘) is held
+      return !event.ctrlKey && !event.metaKey
+        ? event.type !== 'wheel'
+        : true;
     })
+    .scaleExtent([0.2, 10])
     .on("zoom", (event) => {
       g.attr("transform", event.transform);
     });
 
   svg.call(zoom);
 
-  // Set initial zoom
-  const initialScale = 0.3;
-  const centerX = width / 2;
-  const centerY = height / 2;
-
   svg.call(
     zoom.transform,
     d3.zoomIdentity.translate(centerX, centerY).scale(initialScale)
   );
+
 
 
     // Add a line for each link, and a circle for each node.
