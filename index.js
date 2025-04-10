@@ -70,20 +70,31 @@ function updatePlugin(data) {
       const centerX = width / 2;
       const centerY = height / 2;
 
-    const zoom = d3.zoom()
-    .filter((event) => {
-      return !event.ctrlKey && !event.metaKey
-        ? event.type !== 'wheel'
-        : true;
-    })
-    .scaleExtent([0.2, 10])
-    .on("zoom", (event) => {
-      const scale = event.transform.k;
-      // Always center the zoom at the original center
-      g.attr("transform", `translate(${centerX},${centerY}) scale(${scale})`);
-    });
 
-  svg.call(zoom);
+      const zoom = d3.zoom()
+      .filter((event) => {
+        // Allow only:
+        // - wheel zoom with Ctrl or Meta key
+        // - pinch gestures (event.touches is defined and has 2 points)
+        if (event.type === "wheel") {
+          return event.ctrlKey || event.metaKey;
+        }
+        if (event.type === "touchstart" && event.touches && event.touches.length === 2) {
+          return true; // Allow pinch-zoom
+        }
+        return false; // Block everything else (like pan)
+      })
+      .scaleExtent([0.2, 10])
+      .on("zoom", (event) => {
+        const scale = event.transform.k;
+        g.attr("transform", `translate(${centerX},${centerY}) scale(${scale})`);
+      });
+
+      svg
+  .style("touch-action", "auto")  // VERY important: allow default browser scrolling
+  .call(zoom);
+
+
 
   svg.call(
     zoom.transform,
