@@ -65,23 +65,22 @@ function updatePlugin(data) {
       .attr("style", "max-width: 100%; height: auto;");
 
 
-    const g = svg.append("g");
-    const initialScale = 0.4;
-    const centerX = width / 2;
-    const centerY = height / 2;
+      const g = svg.append("g");
+      const initialScale = 0.4;
+      const centerX = width / 2;
+      const centerY = height / 2;
 
     const zoom = d3.zoom()
     .filter((event) => {
-      // Only zoom when:
-      //  - it's not a wheel event (like mouse drag or touch)
-      //  - OR if it's a wheel event and Ctrl or Meta (⌘) is held
       return !event.ctrlKey && !event.metaKey
         ? event.type !== 'wheel'
         : true;
     })
     .scaleExtent([0.2, 10])
     .on("zoom", (event) => {
-      g.attr("transform", event.transform);
+      const scale = event.transform.k;
+      // Always center the zoom at the original center
+      g.attr("transform", `translate(${centerX},${centerY}) scale(${scale})`);
     });
 
   svg.call(zoom);
@@ -90,6 +89,7 @@ function updatePlugin(data) {
     zoom.transform,
     d3.zoomIdentity.translate(centerX, centerY).scale(initialScale)
   );
+
 
 
 
