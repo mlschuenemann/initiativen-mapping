@@ -1,5 +1,4 @@
-const jsonURL =
-  "./graph.json";
+const jsonURL = "./graph.json";
 
 // Function to fetch the JSON data from either the local or hosted file
 async function fetchData() {
@@ -17,7 +16,6 @@ fetchData();
 // Function to update the D3 chart using the fetched data
 function updatePlugin(data) {
   const chart = () => {
-
     const container = document.getElementById("chart");
     const { width, height } = container.getBoundingClientRect();
 
@@ -27,7 +25,6 @@ function updatePlugin(data) {
     function clamp(val, min, max) {
       return Math.max(min, Math.min(max, val));
     }
-
 
     const simulation = d3
       .forceSimulation(nodes)
@@ -46,14 +43,25 @@ function updatePlugin(data) {
         "collide",
         d3.forceCollide().radius((d) => (d.style?.radius || 10) + 10)
       )
-      .force("x", d3.forceX().x((d) =>
-        clamp(d.x, (d.style?.radius || 10), width - (d.style?.radius || 10))
-      ).strength(0.1))
+      .force(
+        "x",
+        d3
+          .forceX()
+          .x((d) =>
+            clamp(d.x, d.style?.radius || 10, width - (d.style?.radius || 10))
+          )
+          .strength(0.1)
+      )
 
-      .force("y", d3.forceY().y((d) =>
-        clamp(d.y, (d.style?.radius || 10), height - (d.style?.radius || 10))
-      ).strength(0.1));
-
+      .force(
+        "y",
+        d3
+          .forceY()
+          .y((d) =>
+            clamp(d.y, d.style?.radius || 10, height - (d.style?.radius || 10))
+          )
+          .strength(0.1)
+      );
 
     // Create the SVG container inside the #chart div.
     const svg = d3
@@ -61,28 +69,28 @@ function updatePlugin(data) {
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .attr("viewBox", [0,0, width, height])
+      .attr("viewBox", [0, 0, width, height])
       .attr("style", "max-width: 100%; height: auto;");
 
+    const g = svg.append("g");
+    const initialScale = 0.4;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-      const g = svg.append("g");
-      const initialScale = 0.4;
-      const centerX = width / 2;
-      const centerY = height / 2;
-
-
-      const zoom = d3.zoom()
+    const zoom = d3
+      .zoom()
       .filter((event) => {
-        // Allow only:
-        // - wheel zoom with Ctrl or Meta key
-        // - pinch gestures (event.touches is defined and has 2 points)
         if (event.type === "wheel") {
           return event.ctrlKey || event.metaKey;
         }
-        if (event.type === "touchstart" && event.touches && event.touches.length === 2) {
+        if (
+          event.type === "touchstart" &&
+          event.touches &&
+          event.touches.length === 2
+        ) {
           return true; // Allow pinch-zoom
         }
-        return false; // Block everything else (like pan)
+        return false; // Block everything else
       })
       .scaleExtent([0.2, 10])
       .on("zoom", (event) => {
@@ -90,19 +98,14 @@ function updatePlugin(data) {
         g.attr("transform", `translate(${centerX},${centerY}) scale(${scale})`);
       });
 
-      svg
-  .style("touch-action", "auto")  // VERY important: allow default browser scrolling
-  .call(zoom);
+    svg
+      .style("touch-action", "auto") // allow default browser scrolling
+      .call(zoom);
 
-
-
-  svg.call(
-    zoom.transform,
-    d3.zoomIdentity.translate(centerX, centerY).scale(initialScale)
-  );
-
-
-
+    svg.call(
+      zoom.transform,
+      d3.zoomIdentity.translate(centerX, centerY).scale(initialScale)
+    );
 
     // Add a line for each link, and a circle for each node.
     const link = g
@@ -126,9 +129,9 @@ function updatePlugin(data) {
       // Add this within the click event for each node
       .on("click", (event, d) => {
         if (d.web_links) {
-            window.open(d.web_links, "_blank");
+          window.open(d.web_links, "_blank");
         }
-    })
+      });
 
     const labels = g
       .append("g")
@@ -164,7 +167,6 @@ function updatePlugin(data) {
 
       labels.attr("x", (d) => d.x).attr("y", (d) => d.y);
     });
-
 
     // Define the original color and radius for reset
     const originalColor = "#888";
@@ -255,17 +257,15 @@ function updatePlugin(data) {
       event.subject.fy = event.subject.y;
     }
 
-   function dragged(event) {
+    function dragged(event) {
       // Get the width and height of the SVG (viewport boundaries)
       const container = document.getElementById("chart");
       const { width, height } = container.getBoundingClientRect();
-
 
       // Clamp the node's new x and y positions to stay within the SVG boundaries
       event.subject.fx = Math.max(-width, Math.min(width, event.x));
       event.subject.fy = Math.max(-height, Math.min(height, event.y));
     }
-
 
     function dragended(event) {
       if (!event.active) simulation.alphaTarget(0);
